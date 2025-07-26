@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run prisma:migration && node index.js",
+    "start": "ts-node index.ts",
     "dev": "nodemon --exec ts-node index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "prisma:studio": "prisma studio",
-    "prisma:migration": "npx prisma migrate dev --name init"
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
