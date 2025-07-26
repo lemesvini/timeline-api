@@ -1,21 +1,26 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 // const productRoutes = require('./routes/productRoutes');
-const productRoutes = require('./routes/productRoutes.ts');
+const productRoutes = require("./routes/productRoutes.ts");
 // const serviceRoutes = require('./routes/serviceRoutes');
 // const orderRoutes = require('./routes/orderRoutes');
-const userRoutes = require('./routes/userRoutes');
-const authRoutes = require('./routes/authRoutes');
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/products', productRoutes);
-app.use('/auth', authRoutes);
-app.use('/users', userRoutes);
+// Health check endpoint
+app.get("/", (req: any, res: any) => {
+  res.json({ status: "OK", message: "Timeline API is running" });
+});
+
+app.use("/products", productRoutes);
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
 // app.use('/services', serviceRoutes);
 // app.use('/orders', orderRoutes);
 // app.use('/users', userRoutes);
