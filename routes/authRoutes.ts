@@ -39,23 +39,80 @@ function toUserResponse(user: any) {
 
 router.post('/sign-in', async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials', error: 'User not found' });
+  
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials', error: 'User not found' });
+    }
+    
+    // Check if account is locked
+    if (user.lockUntil && new Date(user.lockUntil) > new Date()) {
+      return res.status(423).json({ 
+        message: 'Account is locked due to too many failed login attempts', 
+        error: 'Account locked',
+        lockUntil: user.lockUntil
+      });
+    }
+    
+    const valid = await bcrypt.compare(password, user.password);
+    
+    if (!valid) {
+      // Increment failed login attempts
+      const updatedFailedAttempts = user.failedLoginAttempts + 1;
+      
+      // Check if account should be locked (after 5 failed attempts)
+      const shouldLock = updatedFailedAttempts >= 5;
+      const lockUntil = shouldLock ? new Date(Date.now() + 15 * 60 * 1000) : null; // Lock for 15 minutes
+      
+      // Update user with failed attempts and lock status
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginAttempts: updatedFailedAttempts,
+          lockUntil: lockUntil,
+        },
+      });
+      
+      return res.status(401).json({ 
+        message: 'Invalid credentials', 
+        error: 'Wrong password',
+        failedLoginAttempts: updatedFailedAttempts,
+        accountLocked: shouldLock
+      });
+    }
+    
+    // Successful login - reset failed attempts and update last login
+    const accessToken = signJwt(user);
+    
+    const successLoginUpdatedUser = await prisma.user.update({ 
+      where: { id: user.id }, 
+      data: { 
+        lastLogin: new Date(),
+        failedLoginAttempts: 0, // Reset failed attempts on successful login
+        lockUntil: null, // Remove lock on successful login
+      } 
+    });
+    
+    // Get updated user data
+    const updatedUser = await prisma.user.findUnique({ where: { id: user.id } });
+    
+    if (!updatedUser) {
+      return res.status(500).json({ message: 'Internal server error', error: 'User not found after update' });
+    }
+    
+    return res.json({
+      message: 'Login successful',
+      data: {
+        accessToken,
+        user: toUserResponse(updatedUser),
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    return res.status(500).json({ message: 'Internal server error', error: 'Server error' });
   }
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) {
-    return res.status(401).json({ message: 'Invalid credentials', error: 'Wrong password' });
-  }
-  const accessToken = signJwt(user);
-  await prisma.user.update({ where: { id: user.id }, data: { lastLogin: new Date() } });
-  return res.json({
-    message: 'Login successful',
-    data: {
-      accessToken,
-      user: toUserResponse(user),
-    },
-  });
 });
 
 router.get('/authenticated-user', async (req: Request, res: Response) => {
