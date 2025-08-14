@@ -292,4 +292,88 @@ router.delete(
   }
 );
 
+// GET /users/export/selectable-fields - Get available fields for user export
+router.get(
+  "/export/selectable-fields",
+  verifyToken,
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const selectableFields = [
+        {
+          key: "id",
+          label: "ID",
+          type: "number",
+          description: "Unique user identifier"
+        },
+        {
+          key: "fullName",
+          label: "Full Name",
+          type: "string",
+          description: "User's full name"
+        },
+        {
+          key: "email",
+          label: "Email",
+          type: "string",
+          description: "User's email address"
+        },
+        {
+          key: "emailConfirmed",
+          label: "Email Confirmed",
+          type: "boolean",
+          description: "Whether the email has been confirmed"
+        },
+        {
+          key: "role",
+          label: "Role",
+          type: "string",
+          description: "User's role in the system"
+        },
+        {
+          key: "failedLoginAttempts",
+          label: "Failed Login Attempts",
+          type: "number",
+          description: "Number of consecutive failed login attempts"
+        },
+        {
+          key: "lastLogin",
+          label: "Last Login",
+          type: "datetime",
+          description: "Timestamp of the last successful login"
+        },
+        {
+          key: "lockUntil",
+          label: "Lock Until",
+          type: "datetime",
+          description: "Timestamp until which the account is locked"
+        },
+        {
+          key: "avatarUrl",
+          label: "Avatar URL",
+          type: "string",
+          description: "URL to the user's avatar image"
+        },
+        {
+          key: "createdAt",
+          label: "Created At",
+          type: "datetime",
+          description: "Timestamp when the user was created"
+        }
+      ];
+
+      res.json({
+        data: selectableFields,
+        message: "Selectable fields retrieved successfully"
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({
+          message: "Error fetching selectable fields",
+          error: "Internal server error",
+        });
+    }
+  }
+);
+
 module.exports = router;
