@@ -150,7 +150,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/viniciuslemes/Documents/projetos/timeline/timeline-api/generated/prisma",
+      "value": "/Users/felipemotta/timeline-app/timeline-api/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -164,7 +164,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/viniciuslemes/Documents/projetos/timeline/timeline-api/prisma/schema.prisma",
+    "sourceFilePath": "/Users/felipemotta/timeline-app/timeline-api/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

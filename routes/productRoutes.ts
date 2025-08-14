@@ -7,17 +7,7 @@ const prisma = new PrismaClient();
 // GET all products
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const products = await prisma.product.findMany({
-      include: {
-        director: {
-          select: {
-            id: true,
-            fullName: true,
-            role: true,
-          },
-        },
-      },
-    });
+    const products = await prisma.product.findMany();
 
     const productsWithId = products.map((product) => ({
       ...product,
@@ -47,15 +37,6 @@ router.get("/:id", async (req: Request, res: Response) => {
   try {
     const product = await prisma.product.findUnique({
       where: { id: parseInt(req.params.id) },
-      include: {
-        director: {
-          select: {
-            id: true,
-            fullName: true,
-            role: true,
-          },
-        },
-      },
     });
 
     if (!product) {
@@ -87,15 +68,6 @@ router.post("/", async (req: Request, res: Response) => {
     const { name, description, price } = req.body;
     const newProduct = await prisma.product.create({
       data: { name, description, price },
-      include: {
-        director: {
-          select: {
-            id: true,
-            fullName: true,
-            role: true,
-          },
-        },
-      },
     });
 
     const productWithId = {
@@ -121,15 +93,6 @@ router.put("/:id", async (req: Request, res: Response) => {
     const updatedProduct = await prisma.product.update({
       where: { id: parseInt(req.params.id) },
       data: { name, description, price },
-      include: {
-        director: {
-          select: {
-            id: true,
-            fullName: true,
-            role: true,
-          },
-        },
-      },
     });
 
     const productWithId = {
