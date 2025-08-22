@@ -2,10 +2,11 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
-const productRoutes = require('./routes/productRoutes');
+const productRoutes = require("./routes/productRoutes");
 // const serviceRoutes = require('./routes/serviceRoutes');
 // const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require("./routes/userRoutes");
+const customerRoutes = require("./routes/customerRoute");
 const authRoutes = require("./routes/authRoutes");
 
 const app = express();
@@ -20,6 +21,7 @@ app.get("/", (req: any, res: any) => {
 app.use("/products", productRoutes);
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/customers", customerRoutes);
 // app.use('/services', serviceRoutes);
 // app.use('/orders', orderRoutes);
 // app.use('/users', userRoutes);

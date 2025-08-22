@@ -43,3 +43,17 @@ model Product {
   directorId  Int?
   director    User?    @relation("DirectorMovies", fields: [directorId], references: [id])
 }
+
+model Customer {
+  id         Int      @id @default(autoincrement()) // primary key
+  firstName  String
+  lastName   String
+  email      String   @unique
+  phone      String? // optional
+  address    String?
+  city       String?
+  state      String?
+  postalCode String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
